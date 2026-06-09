@@ -21,7 +21,9 @@ async function ingest() {
     await pool.end();
     return;
   }
-  console.log(`Ingesting ${files.length} document(s) from ${KB_DIR} (embedding, please wait)...`);
+  console.log(
+    `Ingesting ${files.length} document(s) from ${KB_DIR} (embedding, please wait)...`,
+  );
   for (const file of files) {
     const content = await readFile(join(KB_DIR, file), "utf8");
     const result = await ingestDocument({

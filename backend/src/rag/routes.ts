@@ -15,7 +15,9 @@ ragRouter.post("/documents", async (req, res, next) => {
   try {
     const parsed = ingestBody.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ error: parsed.error.issues[0]?.message ?? "Invalid body" });
+      return res
+        .status(400)
+        .json({ error: parsed.error.issues[0]?.message ?? "Invalid body" });
     }
     const result = await ingestDocument(parsed.data);
     res.status(201).json(result);
@@ -42,7 +44,9 @@ ragRouter.post("/ask", async (req, res, next) => {
   try {
     const parsed = askBody.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ error: parsed.error.issues[0]?.message ?? "Invalid body" });
+      return res
+        .status(400)
+        .json({ error: parsed.error.issues[0]?.message ?? "Invalid body" });
     }
     const result = await answerQuestion(parsed.data.question);
     res.json(result);

@@ -16,7 +16,10 @@ function required(name: string, fallback?: string): string {
 export const config = {
   port: Number(process.env.PORT ?? 4000),
   corsOrigin: process.env.CORS_ORIGIN ?? "http://localhost:3001",
-  databaseUrl: required("DATABASE_URL", "postgres://minetech:minetech@localhost:5432/minetech"),
+  databaseUrl: required(
+    "DATABASE_URL",
+    "postgres://minetech:minetech@localhost:5432/minetech",
+  ),
   ollama: {
     host: process.env.OLLAMA_HOST ?? "http://localhost:11434",
     chatModel: process.env.OLLAMA_CHAT_MODEL ?? "llama3.2",

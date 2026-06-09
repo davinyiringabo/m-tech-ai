@@ -15,7 +15,9 @@ triageRouter.post("/triage", async (req, res, next) => {
     const parsed = triageBody.safeParse(req.body);
     console.log(parsed);
     if (!parsed.success) {
-      return res.status(400).json({ error: parsed.error.issues[0]?.message ?? "Invalid body" });
+      return res
+        .status(400)
+        .json({ error: parsed.error.issues[0]?.message ?? "Invalid body" });
     }
     const record = await triageText(parsed.data.text);
     res.status(201).json(record);
@@ -27,9 +29,12 @@ triageRouter.post("/triage", async (req, res, next) => {
 // GET /api/tickets?category=&priority=&search=
 triageRouter.get("/tickets", async (req, res, next) => {
   try {
-    const category = typeof req.query.category === "string" ? req.query.category : undefined;
-    const priority = typeof req.query.priority === "string" ? req.query.priority : undefined;
-    const search = typeof req.query.search === "string" ? req.query.search : undefined;
+    const category =
+      typeof req.query.category === "string" ? req.query.category : undefined;
+    const priority =
+      typeof req.query.priority === "string" ? req.query.priority : undefined;
+    const search =
+      typeof req.query.search === "string" ? req.query.search : undefined;
     const tickets = await listTickets({ category, priority, search });
     res.json({ tickets });
   } catch (err) {

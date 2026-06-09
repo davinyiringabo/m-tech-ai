@@ -1,7 +1,13 @@
 import { config } from "../config.js";
 import { query } from "../db/index.js";
 import { generateStructured } from "../llm/ollama.js";
-import { CATEGORIES, PRIORITIES, SENTIMENTS, triageSchema, type Triage } from "./schema.js";
+import {
+  CATEGORIES,
+  PRIORITIES,
+  SENTIMENTS,
+  triageSchema,
+  type Triage,
+} from "./schema.js";
 
 const SYSTEM_PROMPT = `You are an expert customer-support triage assistant.
 Given a single inbound message, you classify it and draft a reply.
@@ -76,7 +82,7 @@ export async function triageText(rawText: string): Promise<TriageRecord> {
       triage.confidence,
       status,
       config.ollama.chatModel,
-    ]
+    ],
   );
 
   return inserted.rows[0];
@@ -88,7 +94,9 @@ export type TicketFilters = {
   search?: string;
 };
 
-export async function listTickets(filters: TicketFilters): Promise<TriageRecord[]> {
+export async function listTickets(
+  filters: TicketFilters,
+): Promise<TriageRecord[]> {
   const where: string[] = [];
   const params: unknown[] = [];
 
@@ -102,13 +110,15 @@ export async function listTickets(filters: TicketFilters): Promise<TriageRecord[
   }
   if (filters.search) {
     params.push(`%${filters.search}%`);
-    where.push(`(raw_text ILIKE $${params.length} OR summary ILIKE $${params.length})`);
+    where.push(
+      `(raw_text ILIKE $${params.length} OR summary ILIKE $${params.length})`,
+    );
   }
 
   const clause = where.length ? `WHERE ${where.join(" AND ")}` : "";
   const res = await query<TriageRecord>(
     `SELECT * FROM tickets ${clause} ORDER BY created_at DESC LIMIT 200`,
-    params
+    params,
   );
   return res.rows;
 }
@@ -119,9 +129,11 @@ export async function getTicketStats(): Promise<{
   byPriority: Record<string, number>;
   needsReview: number;
 }> {
-  const res = await query<{ category: string; priority: string; status: string }>(
-    `SELECT category, priority, status FROM tickets`
-  );
+  const res = await query<{
+    category: string;
+    priority: string;
+    status: string;
+  }>(`SELECT category, priority, status FROM tickets`);
   const byCategory: Record<string, number> = {};
   const byPriority: Record<string, number> = {};
   let needsReview = 0;

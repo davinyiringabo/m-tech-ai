@@ -4,8 +4,7 @@ import { query } from "../db/index.js";
 import { chat, embed, embedOne } from "../llm/ollama.js";
 import { chunkText } from "./chunk.js";
 
-const NOT_FOUND_MESSAGE =
-  "I couldn't find this in the knowledge base.";
+const NOT_FOUND_MESSAGE = "I couldn't find this in the knowledge base.";
 
 const SYSTEM_PROMPT = `You are a grounded knowledge assistant.
 Answer the user's question using ONLY the numbered context passages provided.
@@ -26,7 +25,7 @@ export async function ingestDocument(input: {
 
   const docRes = await query<{ id: string }>(
     `INSERT INTO documents (title, source) VALUES ($1, $2) RETURNING id`,
-    [input.title, input.source ?? null]
+    [input.title, input.source ?? null],
   );
   const documentId = docRes.rows[0].id;
 
@@ -35,7 +34,7 @@ export async function ingestDocument(input: {
     await query(
       `INSERT INTO chunks (document_id, chunk_index, content, embedding)
        VALUES ($1, $2, $3, $4)`,
-      [documentId, i, chunks[i], pgvector.toSql(embeddings[i])]
+      [documentId, i, chunks[i], pgvector.toSql(embeddings[i])],
     );
   }
 
@@ -80,7 +79,7 @@ async function retrieve(question: string): Promise<RetrievedRow[]> {
      JOIN documents d ON d.id = c.document_id
      ORDER BY c.embedding <=> $1
      LIMIT $2`,
-    [pgvector.toSql(vec), config.rag.topK]
+    [pgvector.toSql(vec), config.rag.topK],
   );
   return res.rows;
 }
@@ -92,7 +91,12 @@ export async function answerQuestion(question: string): Promise<RagAnswer> {
   // Gate 1: if nothing is similar enough, short-circuit. This is our concrete
   // definition of "not in the knowledge base" (UC2 under-specified point).
   if (rows.length === 0 || topSimilarity < config.rag.minSimilarity) {
-    return { answer: NOT_FOUND_MESSAGE, grounded: false, citations: [], topSimilarity };
+    return {
+      answer: NOT_FOUND_MESSAGE,
+      grounded: false,
+      citations: [],
+      topSimilarity,
+    };
   }
 
   const context = rows
@@ -105,7 +109,10 @@ export async function answerQuestion(question: string): Promise<RagAnswer> {
   ]);
 
   // Gate 2: the model itself may decide the context is insufficient.
-  const grounded = !answer.trim().toLowerCase().startsWith(NOT_FOUND_MESSAGE.toLowerCase());
+  const grounded = !answer
+    .trim()
+    .toLowerCase()
+    .startsWith(NOT_FOUND_MESSAGE.toLowerCase());
 
   const citations: Citation[] = grounded
     ? rows.map((r, i) => ({
@@ -122,7 +129,13 @@ export async function answerQuestion(question: string): Promise<RagAnswer> {
 }
 
 export async function listDocuments(): Promise<
-  { id: string; title: string; source: string | null; chunks: number; created_at: string }[]
+  {
+    id: string;
+    title: string;
+    source: string | null;
+    chunks: number;
+    created_at: string;
+  }[]
 > {
   const res = await query<{
     id: string;
@@ -135,7 +148,7 @@ export async function listDocuments(): Promise<
      FROM documents d
      LEFT JOIN chunks c ON c.document_id = d.id
      GROUP BY d.id
-     ORDER BY d.created_at DESC`
+     ORDER BY d.created_at DESC`,
   );
   return res.rows.map((r: any) => ({ ...r, chunks: Number(r.chunks) }));
 }

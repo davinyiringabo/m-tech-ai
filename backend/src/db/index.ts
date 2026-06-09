@@ -22,7 +22,7 @@ export async function getClient(): Promise<pg.PoolClient> {
       const message = err instanceof Error ? err.message : String(err);
       console.warn(
         `[db] Could not register pgvector type (RAG features need it). ` +
-          `Run 'npm run migrate' against a pgvector-enabled Postgres. Details: ${message}`
+          `Run 'npm run migrate' against a pgvector-enabled Postgres. Details: ${message}`,
       );
     }
   }
@@ -32,7 +32,7 @@ export async function getClient(): Promise<pg.PoolClient> {
 // This is the main function to query the database
 export async function query<T extends pg.QueryResultRow = pg.QueryResultRow>(
   text: string,
-  params?: unknown[]
+  params?: unknown[],
 ): Promise<pg.QueryResult<T>> {
   const client = await getClient();
   try {

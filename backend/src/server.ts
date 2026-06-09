@@ -1,5 +1,9 @@
 import cors from "cors";
-import express, { type NextFunction, type Request, type Response } from "express";
+import express, {
+  type NextFunction,
+  type Request,
+  type Response,
+} from "express";
 import { config } from "./config.js";
 import { isOllamaReachable } from "./llm/ollama.js";
 import { ragRouter } from "./rag/routes.js";
@@ -32,5 +36,7 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
 
 app.listen(config.port, () => {
   console.log(`Backend listening on http://localhost:${config.port}`);
-  console.log(`Ollama host: ${config.ollama.host} (chat: ${config.ollama.chatModel}, embed: ${config.ollama.embedModel})`);
+  console.log(
+    `Ollama host: ${config.ollama.host} (chat: ${config.ollama.chatModel}, embed: ${config.ollama.embedModel})`,
+  );
 });

@@ -6,19 +6,27 @@ const ollama = new Ollama({ host: config.ollama.host }); // Pull Ollama from the
 
 type Message = { role: "system" | "user" | "assistant"; content: string };
 
-function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> { // This is a helper function to timeout the promise
+function withTimeout<T>(
+  promise: Promise<T>,
+  ms: number,
+  label: string,
+): Promise<T> {
+  // This is a helper function to timeout the promise
   return Promise.race([
     promise,
     new Promise<T>((_, reject) =>
-      setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms)
+      setTimeout(
+        () => reject(new Error(`${label} timed out after ${ms}ms`)),
+        ms,
+      ),
     ),
   ]);
 }
 
 // This is the main function to chat with the model, Plain text chat completion. Used for the RAG answer step
-export async function chat( 
+export async function chat(
   messages: Message[],
-  opts: { model?: string; temperature?: number; timeoutMs?: number } = {}
+  opts: { model?: string; temperature?: number; timeoutMs?: number } = {},
 ): Promise<string> {
   const res = await withTimeout(
     ollama.chat({
@@ -27,7 +35,7 @@ export async function chat(
       options: { temperature: opts.temperature ?? 0.2 },
     }),
     opts.timeoutMs ?? 120_000,
-    "ollama.chat"
+    "ollama.chat",
   );
   return res.message.content;
 }
@@ -49,7 +57,12 @@ export type StructuredResult<T> =
 export async function generateStructured<T extends z.ZodTypeAny>( // This is the main function to generate structured data with the model
   schema: T,
   messages: Message[],
-  opts: { model?: string; temperature?: number; timeoutMs?: number; retries?: number } = {}
+  opts: {
+    model?: string;
+    temperature?: number;
+    timeoutMs?: number;
+    retries?: number;
+  } = {},
 ): Promise<StructuredResult<z.infer<T>>> {
   const jsonSchema = z.toJSONSchema(schema);
   const maxAttempts = (opts.retries ?? 1) + 1;
@@ -66,7 +79,7 @@ export async function generateStructured<T extends z.ZodTypeAny>( // This is the
           options: { temperature: opts.temperature ?? 0 },
         }),
         opts.timeoutMs ?? 120_000,
-        "ollama.generateStructured"
+        "ollama.generateStructured",
       );
       lastRaw = res.message.content;
 
@@ -80,7 +93,12 @@ export async function generateStructured<T extends z.ZodTypeAny>( // This is the
         lastError = validatedMessage.error.message;
         continue;
       }
-      return { ok: true, data: validatedMessage.data, raw: lastRaw, attempts: attempt };
+      return {
+        ok: true,
+        data: validatedMessage.data,
+        raw: lastRaw,
+        attempts: attempt,
+      };
     } catch (err) {
       lastError = err instanceof Error ? err.message : String(err);
     }
@@ -90,15 +108,15 @@ export async function generateStructured<T extends z.ZodTypeAny>( // This is the
 }
 
 // This is the main function to embed the input with the model
-export async function embed( 
+export async function embed(
   input: string[],
-  opts: { model?: string; timeoutMs?: number } = {}
+  opts: { model?: string; timeoutMs?: number } = {},
 ): Promise<number[][]> {
   if (input.length === 0) return [];
   const res = await withTimeout(
     ollama.embed({ model: opts.model ?? config.ollama.embedModel, input }),
     opts.timeoutMs ?? 120_000,
-    "ollama.embed"
+    "ollama.embed",
   );
   return res.embeddings;
 }
@@ -112,7 +130,9 @@ export async function embedOne(text: string): Promise<number[]> {
  * Tolerant JSON parse: handles the common small-model habit of wrapping JSON
  * in prose or markdown code fences even when constrained output mostly works.
  */
-function safeJsonParse(raw: string): { ok: true; value: unknown } | { ok: false; error: string } {
+function safeJsonParse(
+  raw: string,
+): { ok: true; value: unknown } | { ok: false; error: string } {
   const trimmed = raw.trim();
   const candidates = [trimmed];
 
@@ -121,7 +141,8 @@ function safeJsonParse(raw: string): { ok: true; value: unknown } | { ok: false;
 
   const first = trimmed.indexOf("{");
   const last = trimmed.lastIndexOf("}");
-  if (first !== -1 && last > first) candidates.push(trimmed.slice(first, last + 1));
+  if (first !== -1 && last > first)
+    candidates.push(trimmed.slice(first, last + 1));
 
   for (const candidate of candidates) {
     try {

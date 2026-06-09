@@ -12,11 +12,13 @@ const SAMPLES = [
 ];
 
 async function seed() {
-  console.log(`Seeding ${SAMPLES.length} sample tickets (this calls the LLM, please wait)...`);
+  console.log(
+    `Seeding ${SAMPLES.length} sample tickets (this calls the LLM, please wait)...`,
+  );
   for (const [i, text] of SAMPLES.entries()) {
     const record = await triageText(text);
     console.log(
-      `  [${i + 1}/${SAMPLES.length}] ${record.category}/${record.priority} (${record.status}) - ${record.summary}`
+      `  [${i + 1}/${SAMPLES.length}] ${record.category}/${record.priority} (${record.status}) - ${record.summary}`,
     );
   }
   console.log("Seeding complete.");

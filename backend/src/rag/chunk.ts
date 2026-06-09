@@ -2,16 +2,22 @@
  * This is a lightweight recursive chunker.
  *
  * It should split on paragraph boundaries first, Splits on paragraph boundaries first, packs them up to ~`maxChars`, and adds a
- * small overlap so context isn't lost at chunk edges. This is Kept dependency-free 
+ * small overlap so context isn't lost at chunk edges. This is Kept dependency-free
  */
 export function chunkText(
   text: string,
-  { maxChars = 900, overlap = 150 }: { maxChars?: number; overlap?: number } = {}
+  {
+    maxChars = 900,
+    overlap = 150,
+  }: { maxChars?: number; overlap?: number } = {},
 ): string[] {
   const clean = text.replace(/\r\n/g, "\n").trim();
   if (!clean) return [];
 
-  const paragraphs = clean.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
+  const paragraphs = clean
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean);
   const chunks: string[] = [];
   let current = "";
 
