@@ -5,7 +5,7 @@ import { pool } from "../db/index.js";
 import { ingestDocument } from "../rag/service.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const KB_DIR = join(__dirname, "..", "..", "data", "kb");
+const KB_DIR = join(__dirname, "..", "..", "data", "knowledge-base");
 
 function titleFromFilename(file: string): string {
   return file

@@ -1,1 +1,4 @@
 .todos.*
+
+# Local env (use .env.example as the template)
+.env

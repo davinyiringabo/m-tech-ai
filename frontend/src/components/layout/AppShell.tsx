@@ -72,9 +72,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           })}
         </nav>
 
-        <div className="mt-auto px-2">
+        {/* <div className="mt-auto px-2">
           <HealthBadge />
-        </div>
+        </div> */}
       </aside>
 
       <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
