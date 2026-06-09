@@ -1,0 +1,30 @@
+{
+  "name": "minetech-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Standalone backend: self-hosted LLM (Ollama) powering Smart Intake Triage + Grounded RAG assistant",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "migrate": "tsx src/db/migrate.ts",
+    "seed": "tsx src/scripts/seed.ts",
+    "ingest": "tsx src/scripts/ingest.ts"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.9.2"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "ollama": "^0.6.3",
+    "pg": "^8.21.0",
+    "pgvector": "^0.3.0",
+    "zod": "^4.4.3",
+    "zod-to-json-schema": "^3.25.2"
+  }
+}
