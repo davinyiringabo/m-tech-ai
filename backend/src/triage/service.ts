@@ -47,7 +47,7 @@ function fallbackTriage(): Triage {
     priority: "medium",
     sentiment: "neutral",
     summary: "Could not be automatically triaged — needs human review.",
-    extracted: { customer_name: null, product: null, order_id: null },
+    extracted: { customer_name: 'N/A', product: 'N/A', order_id: 'N/A' },
     suggested_reply:
       "Thanks for reaching out. We've received your message and a team member will follow up shortly.",
     confidence: 0,

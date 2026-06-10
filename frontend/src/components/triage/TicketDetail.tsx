@@ -19,7 +19,7 @@ function Field({ label, value }: { label: string; value: string | null }) {
       <span className="text-xs uppercase tracking-wide text-muted-foreground">
         {label}
       </span>
-      <span className="text-sm">{value && value.trim() ? value : "—"}</span>
+      <span className="text-sm">{value && value.trim() ? value : "N/A"}</span>
     </div>
   );
 }
